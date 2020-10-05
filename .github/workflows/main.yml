@@ -7,31 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: generate cache key
-        run: |
-          shasum build.sbt \
-          project/plugins.sbt \
-          project/build.properties > gha.cache.tmp
-      - uses: actions/cache@v1
+      - uses: coursier/cache-action@v5
         with:
-          path: ~/.sbt
-          key: ${{ runner.os }}-sbt-${{ hashFiles('gha.cache.tmp') }}
-          restore-keys: |
-            ${{ runner.os }}-sbt-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.ivy2/cache
-          key: ${{ runner.os }}-ivy-${{ hashFiles('gha.cache.tmp') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.cache/coursier
-          key: ${{ runner.os }}-coursier-${{ hashFiles('gha.cache.tmp') }}
-          restore-keys: |
-            ${{ runner.os }}-coursier-
-      - uses: actions/setup-java@v1
-        with:
-          java-version: "11.0.5"
-          architecture: x64
+          extraFiles: ".github/scripts/*.sh"
       - run: sbt scalafmtSbtCheck test
